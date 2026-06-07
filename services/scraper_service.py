@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 def extrair_contatos(url):
 
     try:
+
         response = requests.get(
             url,
             timeout=10,
@@ -22,7 +23,7 @@ def extrair_contatos(url):
         )
 
         telefones = re.findall(
-            r"\(?\d{2}\)?\s?\d{4,5}-?\d{4}",
+            r"(?:\+55\s?)?(?:\(?\d{2}\)?\s?)?(?:9?\d{4})[- ]?\d{4}",
             html
         )
 
@@ -32,6 +33,58 @@ def extrair_contatos(url):
         }
 
     except Exception as e:
+
         return {
+            "emails": [],
+            "telefones": [],
             "erro": str(e)
+        }
+
+
+def extrair_redes_sociais(url):
+
+    try:
+
+        response = requests.get(
+            url,
+            timeout=10,
+            headers={
+                "User-Agent": "Mozilla/5.0"
+            }
+        )
+
+        soup = BeautifulSoup(
+            response.text,
+            "html.parser"
+        )
+
+        instagram = ""
+        linkedin = ""
+        facebook = ""
+
+        for link in soup.find_all("a", href=True):
+
+            href = link["href"]
+
+            if "instagram.com" in href:
+                instagram = href
+
+            elif "linkedin.com" in href:
+                linkedin = href
+
+            elif "facebook.com" in href:
+                facebook = href
+
+        return {
+            "instagram": instagram,
+            "linkedin": linkedin,
+            "facebook": facebook
+        }
+
+    except Exception:
+
+        return {
+            "instagram": "",
+            "linkedin": "",
+            "facebook": ""
         }

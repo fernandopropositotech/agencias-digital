@@ -1,38 +1,29 @@
 import pandas as pd
 
-from services.scraper_service import extrair_contatos
-from services.export_service import salvar_csv
+from services.maps_service import buscar_agencias_maps
 
-dados = pd.read_csv(
-    "input_sites.csv"
-)
+dados = buscar_agencias_maps()
 
-resultado_final = []
+resultado = []
 
-for _, linha in dados.iterrows():
+for item in dados:
 
-    site = linha["site"]
+    resultado.append({
 
-    print(f"Analisando: {site}")
+        "empresa": item.get("title"),
 
-    resultado = extrair_contatos(site)
+        "site": item.get("website"),
 
-    resultado_final.append({
-
-        "site": site,
-
-        "email": (
-            resultado["emails"][0]
-            if resultado.get("emails")
-            else ""
-        ),
-
-        "telefone": (
-            resultado["telefones"][0]
-            if resultado.get("telefones")
-            else ""
-        )
+        "telefone": item.get("phone")
 
     })
 
-salvar_csv(resultado_final)
+df = pd.DataFrame(resultado)
+
+df.to_csv(
+    "output/google_maps.csv",
+    index=False,
+    encoding="utf-8-sig"
+)
+
+print(df.head())
