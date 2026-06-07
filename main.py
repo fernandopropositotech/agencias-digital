@@ -1,11 +1,7 @@
-from apify_client import ApifyClient
-import os
-from dotenv import load_dotenv
+from services.scraper_service import extrair_contatos
 
-load_dotenv()
-
-client = ApifyClient(
-    os.getenv("APIFY_TOKEN")
+resultado = extrair_contatos(
+    "https://v4company.com"
 )
 
-print("Conectado")
+print(resultado)
