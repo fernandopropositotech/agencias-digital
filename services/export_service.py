@@ -9,3 +9,5 @@ def salvar_csv(dados):
         index=False,
         encoding="utf-8-sig"
     )
+
+    print("CSV salvo com sucesso!")
