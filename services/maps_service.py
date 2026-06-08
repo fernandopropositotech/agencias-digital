@@ -8,13 +8,55 @@ client = ApifyClient(
     os.getenv("APIFY_TOKEN")
 )
 
+
+def filtrar_brasil(dados):
+
+    filtrados = []
+
+    for item in dados:
+
+        address = str(
+            item.get("address", "")
+        ).lower()
+
+        country = str(
+            item.get("country", "")
+        ).lower()
+
+        if (
+            "brasil" in address
+            or "brazil" in address
+            or country == "br"
+            or country == "brazil"
+            or country == "brasil"
+        ):
+            filtrados.append(item)
+
+    return filtrados
+
+
 def buscar_agencias_maps():
 
     run_input = {
+
         "searchStringsArray": [
-            "agencia de marketing digital sao paulo"
+
+            "agencia marketing digital",
+
+            "trafego pago agencia",
+
+            "social media agencia",
+
+            "seo agencia",
+
+            "marketing digital brasil"
+
         ],
-        "maxCrawledPlacesPerSearch": 4
+
+        "locationQuery": "Brazil",
+
+        "maxCrawledPlacesPerSearch": 5
+
     }
 
     run = client.actor(
@@ -22,8 +64,6 @@ def buscar_agencias_maps():
     ).call(
         run_input=run_input
     )
-
-    print(run)
 
     dataset_id = run.default_dataset_id
 
@@ -35,4 +75,4 @@ def buscar_agencias_maps():
 
         dados.append(item)
 
-    return dados
+    return filtrar_brasil(dados)
